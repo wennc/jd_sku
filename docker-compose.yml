@@ -1,0 +1,21 @@
+jd_scripts:
+        image: lxk0301/jd_scripts
+        container_name: jd_scripts
+        restart: always
+        volumes:
+                - ./logs:/scripts/logs
+        tty: true
+        environment:
+                - REPO_URL=git@gitee.com:lxk0301/jd_scripts.git
+                - TG_BOT_TOKEN
+                - TG_USER_ID
+                - PUSH_PLUS_TOKEN
+                - PUSH_PLUS_USER
+                - MARKET_COIN_TO_BEANS=20
+                - RANDOM_DELAY_MAX=30
+                - ENABLE_AUTO_HELP=true
+                - CRZAY_JOY_COIN_ENABLE=Y
+                - JDJOY_APPLYJDBEAN=2000
+                - JD_BEAN_SIGN_NOTIFY_SIMPLE=true
+                - CUSTOM_SHELL_FILE=https://raw.githubusercontent.com/mixool/jd_sku/main/jd_diy.sh
+                - JD_COOKIE
