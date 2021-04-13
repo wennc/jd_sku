@@ -4,6 +4,7 @@
 
 function monkcoder(){
     # https://share.r2ray.com/dust/
+    apk add --no-cache --upgrade grep
     default_root_id="$(curl -s https://share.r2ray.com/dust/ | grep -oE "default_root_id[^,]*" | cut -d\' -f2)"
     folders="$(curl -sX POST "https://share.r2ray.com/dust/?rootId=${default_root_id}" | grep -oP "name.*?\.folder" | cut -d, -f1 | cut -d\" -f3 | grep -v "backup" | tr "\n" " ")"
     test -z "$folders" && return 0 || rm -rf /scripts/dust_*
@@ -22,9 +23,9 @@ function whyour(){
     rm -rf /whyour /scripts/whyour_*
     git clone https://github.com/whyour/hundun.git /whyour
     # 拷贝新文件
-    for jsname in jdzz.js jx_nc.js jx_factory.js jx_factory_component.js ddxw.js dd_factory.js jd_zjd_tuan.js; do cp /whyour/quanx/$jsname /scripts/whyour_$jsname; done
+    for jsname in jdzz.js jx_nc.js jx_factory.js jx_factory_component.js ddxw.js dd_factory.js jd_zjd_tuan.js; do cp -rf /whyour/quanx/$jsname /scripts/whyour_$jsname; done
     for jsname in jdzz.js jx_nc.js jx_factory.js jx_factory_component.js ddxw.js dd_factory.js jd_zjd_tuan.js; do
-        jsnamecron="$(cat /whyour/$jsname | grep -oE "/?/?cron \".*\"" | cut -d\" -f2)"
+        jsnamecron="$(cat /whyour/quanx/$jsname | grep -oE "/?/?cron \".*\"" | cut -d\" -f2)"
         test -z "$jsnamecron" || echo "$jsnamecron node /scripts/whyour_$jsname >> /scripts/logs/whyour_$jsname.log 2>&1" >> /scripts/docker/merged_list_file.sh
     done
 }
