@@ -32,11 +32,11 @@ cd /jd_sku/jd_scripts && docker-compose restart jd_scripts
 ```
   
 #### Tips:
-* [jd_diy.sh](https://raw.githubusercontent.com/mixool/jd_sku/main/jd_diy.sh) 为diy脚本,**默认启用**,任务自动更新,其中涉及到的js脚本均由其它作者编写,未作任何改动
 * [jdformat.sh](https://raw.githubusercontent.com/mixool/jd_sku/main/jdformat.sh) 可使用传入参数和网络参数来编辑docker-compose.yml文件
+* [jd_diy.sh](https://raw.githubusercontent.com/mixool/jd_sku/main/jd_diy.sh) 为diy脚本,**默认启用**,任务自动更新,其中涉及到的js脚本均由其它作者编写,未作任何改动
 * 其它帮助和声明 [lxk0301/jd_docker](https://gitee.com/lxk0301/jd_docker)
   
 #### Thanks:
 * [lxk0301/jd_docker](https://gitee.com/lxk0301/jd_docker)
-* [monk-coder](https://github.com/monk-coder/dust)
+* [monk-coder](https://github.com/monk-coder) [布道场](https://t.me/monk_dust_channel) [dust](https://share.r2ray.com/dust/)
 * 其它diy脚本中涉及到的作者
