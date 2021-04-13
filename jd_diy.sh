@@ -3,14 +3,17 @@
 ### 编辑docker-compose.yml文件添加 - CUSTOM_SHELL_FILE=https://raw.githubusercontent.com/mixool/jd_sku/main/jd_diy.sh
 
 function monkcoder(){
-    # https://github.com/monk-coder/dust
-    rm -rf /monkcoder /scripts/monkcoder_*
-    git clone https://github.com/monk-coder/dust.git /monkcoder
-    # 拷贝新文件
-    for jsname in $(find /monkcoder -name "*.js" | grep -vE "\/backup\/"); do cp ${jsname} /scripts/monkcoder_${jsname##*/}; done
-    for jsname in $(find /monkcoder -name "*.js" | grep -vE "\/backup\/"); do
-        jsnamecron="$(cat $jsname | grep -oE "/?/?cron \".*\"" | cut -d\" -f2)"
-        test -z "$jsnamecron" || echo "$jsnamecron node /scripts/monkcoder_${jsname##*/} >> /scripts/logs/monkcoder_${jsname##*/}.log 2>&1" >> /scripts/docker/merged_list_file.sh
+    # https://share.r2ray.com/dust/
+    default_root_id="$(curl -s https://share.r2ray.com/dust/ | grep -oE "default_root_id[^,]*" | cut -d\' -f2)"
+    folders="$(curl -sX POST "https://share.r2ray.com/dust/?rootId=${default_root_id}" | grep -oP "name.*?\.folder" | cut -d, -f1 | cut -d\" -f3 | grep -v "backup" | tr "\n" " ")"
+    test -z "$folders" && return 0 || rm -rf /scripts/dust_*
+    for folder in $folders; do
+        jsnames="$(curl -sX POST "https://share.r2ray.com/dust/${folder}/?rootId=${default_root_id}" | grep -oP "name.*?\.js\"" | grep -oE "[^\"]*\.js\"" | cut -d\" -f1 | tr "\n" " ")"
+        for jsname in $jsnames; do 
+            curl -s --remote-name "https://share.r2ray.com/dust/${folder}/${jsname}" && mv $jsname /scripts/dust_$jsname
+            jsnamecron="$(cat /scripts/dust_$jsname | grep -oE "/?/?cron \".*\"" | cut -d\" -f2)"
+            test -z "$jsnamecron" || echo "$jsnamecron node /scripts/dust_$jsname >> /scripts/logs/dust_$jsname.log 2>&1" >> /scripts/docker/merged_list_file.sh
+        done
     done
 }
 
@@ -19,8 +22,8 @@ function whyour(){
     rm -rf /whyour /scripts/whyour_*
     git clone https://github.com/whyour/hundun.git /whyour
     # 拷贝新文件
-    for jsname in jx_factory.js jx_factory_component.js jdzz.js jd_zjd_tuan.js; do cp /whyour/quanx/$jsname /scripts/whyour_$jsname; done
-    for jsname in jx_factory.js jx_factory_component.js jdzz.js jd_zjd_tuan.js; do
+    for jsname in jdzz.js jx_nc.js jx_factory.js jx_factory_component.js ddxw.js dd_factory.js jd_zjd_tuan.js; do cp /whyour/quanx/$jsname /scripts/whyour_$jsname; done
+    for jsname in jdzz.js jx_nc.js jx_factory.js jx_factory_component.js ddxw.js dd_factory.js jd_zjd_tuan.js; do
         jsnamecron="$(cat /whyour/$jsname | grep -oE "/?/?cron \".*\"" | cut -d\" -f2)"
         test -z "$jsnamecron" || echo "$jsnamecron node /scripts/whyour_$jsname >> /scripts/logs/whyour_$jsname.log 2>&1" >> /scripts/docker/merged_list_file.sh
     done
@@ -28,7 +31,7 @@ function whyour(){
 
 function diycron(){
     # 启用京价保
-    echo "41 0,23 * * * node /scripts/jd_price.js >> /scripts/logs/jd_price.log 2>&1" >> /scripts/docker/merged_list_file.sh
+    echo "23 8 * * * node /scripts/jd_price.js >> /scripts/logs/jd_price.log 2>&1" >> /scripts/docker/merged_list_file.sh
     # 修改docker_entrypoint.sh执行频率
     #ln -sf /usr/local/bin/docker_entrypoint.sh /usr/local/bin/docker_entrypoint_mix.sh
     #echo "35 */3 * * * docker_entrypoint_mix.sh >> /scripts/logs/default_task.log 2>&1" >> /scripts/docker/merged_list_file.sh
@@ -40,7 +43,7 @@ function main(){
     # DIY脚本
     a_jsnum=$(ls -l /scripts | grep -oE "^-.*js$" | wc -l)
     a_jsname=$(ls -l /scripts | grep -oE "^-.*js$" | grep -oE "[^ ]*js$")
-    #monkcoder
+    monkcoder
     whyour
     b_jsnum=$(ls -l /scripts | grep -oE "^-.*js$" | wc -l)
     b_jsname=$(ls -l /scripts | grep -oE "^-.*js$" | grep -oE "[^ ]*js$")
