@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
-## CUSTOM_SHELL_FILE for https://gitee.com/lxk0301/jd_docker/tree/master/docker
 ### 编辑docker-compose.yml文件添加 - CUSTOM_SHELL_FILE=https://raw.githubusercontent.com/mixool/jd_sku/main/jd_diy.sh
+## CUSTOM_SHELL_FILE for https://gitee.com/lxk0301/jd_docker/tree/master/docker
 
 function monkcoder(){
     # https://share.r2ray.com/dust/
     apk add --no-cache --upgrade grep
-    for ((i = 1; i <= 5; i++)); do
+    i=1;while [ "$i" -le 5 ]; do
         folders="$(curl -sX POST "https://share.r2ray.com/dust/" | grep -oP "name.*?\.folder" | cut -d, -f1 | cut -d\" -f3 | grep -vE "backup|pics|rewrite" | tr "\n" " ")"
-        test -n "$folders" && { rm -rf /scripts/dust_*; break; } || echo 第 $i/5 次目录列表获取失败
+        test -n "$folders" && { rm -rf /scripts/dust_*; break; } || { echo 第 $i/5 次目录列表获取失败; i=$(( i + 1 ));}
     done
     for folder in $folders; do
-        for ((i = 1; i <= 5; i++)); do
+        i=1;while [ "$i" -le 5 ]; do
             jsnames="$(curl -sX POST "https://share.r2ray.com/dust/${folder}/" | grep -oP "name.*?\.js\"" | grep -oE "[^\"]*\.js\"" | cut -d\" -f1 | tr "\n" " ")"
-            test -n "$jsnames" && break || echo 第 $i/5 次 $folder 目录下文件列表获取失败
+            test -n "$jsnames" && break || { echo 第 $i/5 次 $folder 目录下文件列表获取失败; i=$(( i + 1 )); }
         done
         for jsname in $jsnames; do 
-            for ((i = 1; i <= 5; i++)); do
+            i=1;while [ "$i" -le 5 ]; do
                 curl -so /scripts/dust_${jsname} "https://share.r2ray.com/dust/${folder}/${jsname}"
                 jsnamecron="$(cat /scripts/dust_$jsname | grep -oE "/?/?cron \".*\"" | cut -d\" -f2)"
                 test -n "$jsnamecron" && echo "$jsnamecron node /scripts/dust_$jsname >> /scripts/logs/dust_$jsname.log 2>&1" >> /scripts/docker/merged_list_file.sh
-                test "$(wc -c <"/scripts/dust_${jsname}")" -ge 1000 && break || echo 第 $i/5 次 $folder 目录下 $jsname 文件下载失败
+                test "$(wc -c <"/scripts/dust_${jsname}")" -ge 1000 && break || { echo 第 $i/5 次 $folder 目录下 $jsname 文件下载失败; i=$(( i + 1 )); }
             done
         done
     done
