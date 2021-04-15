@@ -8,7 +8,7 @@ function monkcoder(){
     i=1
     while [ "$i" -le 5 ]; do
         folders="$(curl -sX POST "https://share.r2ray.com/dust/" | grep -oP "name.*?\.folder" | cut -d, -f1 | cut -d\" -f3 | grep -vE "backup|pics|rewrite" | tr "\n" " ")"
-        test -n "$folders" && { for jsname in /scripts/dust_*.js; do mv $jsname $(echo $jsname | sed "s/\/scripts\/dust_/\/scripts\/temp_dust_/"); done; break; }
+        test -n "$folders" && { for jsname in /scripts/dust_*.js; do mv -f $jsname $(echo $jsname | sed "s/\/scripts\/dust_/\/scripts\/temp_dust_/"); done; break; }
         test -z "$folders" && { echo 第 $i/5 次目录列表获取失败; i=$(( i + 1 )); }
     done
     for folder in $folders; do
@@ -21,10 +21,8 @@ function monkcoder(){
             i=1
             while [ "$i" -le 5 ]; do
                 [ "$i" -lt 5 ] && curl -so /scripts/dust_${jsname} "https://share.r2ray.com/dust/${folder}/${jsname}"
-                jsnamecron="$(cat /scripts/dust_$jsname | grep -oE "/?/?cron \".*\"" | cut -d\" -f2)"
-                test -n "$jsnamecron" && echo "$jsnamecron node /scripts/dust_$jsname >> /scripts/logs/dust_$jsname.log 2>&1" >> /scripts/docker/merged_list_file.sh
                 test "$(wc -c <"/scripts/dust_${jsname}")" -ge 1000 && break || { echo 第 $i/5 次 $folder 目录下 $jsname 文件下载失败; i=$(( i + 1 )); }
-                [ "$i" -eq 5 ] && mv /scripts/temp_dust_${jsname} /scripts/dust_${jsname}
+                [ "$i" -eq 5 ] && [ -f /scripts/temp_dust_${jsname} ] && mv -f /scripts/temp_dust_${jsname} /scripts/dust_${jsname}
             done
         done
     done
@@ -35,15 +33,15 @@ function whyour(){
     # https://github.com/whyour/hundun/tree/master/quanx
     rm -rf /whyour /scripts/whyour_*
     git clone https://github.com/whyour/hundun.git /whyour
-    # 拷贝新文件
     for jsname in jdzz.js jx_nc.js jx_factory.js jx_factory_component.js ddxw.js dd_factory.js jd_zjd_tuan.js; do cp -rf /whyour/quanx/$jsname /scripts/whyour_$jsname; done
-    for jsname in jdzz.js jx_nc.js jx_factory.js jx_factory_component.js ddxw.js dd_factory.js jd_zjd_tuan.js; do
-        jsnamecron="$(cat /whyour/quanx/$jsname | grep -oE "/?/?cron \".*\"" | cut -d\" -f2)"
-        test -z "$jsnamecron" || echo "$jsnamecron node /scripts/whyour_$jsname >> /scripts/logs/whyour_$jsname.log 2>&1" >> /scripts/docker/merged_list_file.sh
-    done
 }
 
 function diycron(){
+    # monkcoder whyour 定时任务
+    for jsname in /scripts/dust_*.js /scripts/whyour_*.js; do
+        jsnamecron="$(cat $jsname | grep -oE "/?/?cron \".*\"" | cut -d\" -f2)"
+        test -z "$jsnamecron" || echo "$jsnamecron node $jsname >> /scripts/logs/$(echo $jsname | cut -d/ -f3).log 2>&1" >> /scripts/docker/merged_list_file.sh
+    done
     # 启用京价保
     echo "23 8 * * * node /scripts/jd_price.js >> /scripts/logs/jd_price.log 2>&1" >> /scripts/docker/merged_list_file.sh
     # 修改docker_entrypoint.sh执行频率
