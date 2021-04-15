@@ -22,7 +22,7 @@ function monkcoder(){
             while [ "$i" -le 5 ]; do
                 [ "$i" -lt 5 ] && curl -so /scripts/dust_${jsname} "https://share.r2ray.com/dust/${folder}/${jsname}"
                 test "$(wc -c <"/scripts/dust_${jsname}")" -ge 1000 && break || { echo 第 $i/5 次 $folder 目录下 $jsname 文件下载失败; i=$(( i + 1 )); }
-                [ "$i" -eq 5 ] && [ -f /scripts/temp_dust_${jsname} ] && mv -f /scripts/temp_dust_${jsname} /scripts/dust_${jsname}
+                [ "$i" -eq 5 ] && [ -f "/scripts/temp_dust_${jsname}" ] && mv -f /scripts/temp_dust_${jsname} /scripts/dust_${jsname}
             done
         done
     done
