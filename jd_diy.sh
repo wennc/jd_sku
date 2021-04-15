@@ -8,7 +8,8 @@ function monkcoder(){
     i=1
     while [ "$i" -le 5 ]; do
         folders="$(curl -sX POST "https://share.r2ray.com/dust/" | grep -oP "name.*?\.folder" | cut -d, -f1 | cut -d\" -f3 | grep -vE "backup|pics|rewrite" | tr "\n" " ")"
-        test -n "$folders" && { rm -rf /scripts/dust_*; break; } || { echo 第 $i/5 次目录列表获取失败; i=$(( i + 1 ));}
+        test -n "$folders" && { for jsname in /scripts/dust_*.js; do mv $jsname $(echo $jsname | sed "s/\/scripts\/dust_/\/scripts\/temp_dust_/"); done; break }
+        test -z "$folders" && { echo 第 $i/5 次目录列表获取失败; i=$(( i + 1 ));}
     done
     for folder in $folders; do
         i=1
@@ -23,9 +24,11 @@ function monkcoder(){
                 jsnamecron="$(cat /scripts/dust_$jsname | grep -oE "/?/?cron \".*\"" | cut -d\" -f2)"
                 test -n "$jsnamecron" && echo "$jsnamecron node /scripts/dust_$jsname >> /scripts/logs/dust_$jsname.log 2>&1" >> /scripts/docker/merged_list_file.sh
                 test "$(wc -c <"/scripts/dust_${jsname}")" -ge 1000 && break || { echo 第 $i/5 次 $folder 目录下 $jsname 文件下载失败; i=$(( i + 1 )); }
+                [ "$i" -eq 6 ] && mv /scripts/temp_dust_${jsname} /scripts/dust_${jsname}
             done
         done
     done
+    rm -rf /scripts/temp_dust_*.js
 }
 
 function whyour(){
