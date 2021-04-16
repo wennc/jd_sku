@@ -39,4 +39,5 @@ cd /jd_sku/jd_scripts && docker-compose restart jd_scripts
 #### Thanks:
 * [lxk0301/jd_docker](https://gitee.com/lxk0301/jd_docker)
 * [monk-coder](https://github.com/monk-coder) [布道场](https://t.me/monk_dust_channel) [dust](https://share.r2ray.com/dust/)
+* [whyour](https://github.com/whyour/hundun/tree/master/quanx)
 * 其它diy脚本中涉及到的作者
