@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-### 编辑docker-compose.yml文件添加 - CUSTOM_SHELL_FILE=https://raw.githubusercontent.com/mixool/jd_sku/main/jd_diy.sh
-## CUSTOM_SHELL_FILE for https://gitee.com/lxk0301/jd_docker/tree/master/docker
+## 编辑docker-compose.yml文件添加 - CUSTOM_SHELL_FILE=https://raw.githubusercontent.com/mixool/jd_sku/main/jd_diy.sh
+### CUSTOM_SHELL_FILE for https://gitee.com/lxk0301/jd_docker/tree/master/docker
+#### 由于更新可能引入未知BUG,建议复制脚本内容至GIST使用
 
 function monkcoder(){
     # https://share.r2ray.com/dust/
@@ -8,7 +9,7 @@ function monkcoder(){
     i=1
     while [ "$i" -le 5 ]; do
         folders="$(curl -sX POST "https://share.r2ray.com/dust/" | grep -oP "name.*?\.folder" | cut -d, -f1 | cut -d\" -f3 | grep -vE "backup|pics|rewrite" | tr "\n" " ")"
-        test -n "$folders" && { for jsname in /scripts/dust_*.js; do mv -f $jsname $(echo $jsname | sed "s/\/scripts\/dust_/\/scripts\/temp_dust_/"); done; break; }
+        test -n "$folders" && { for jsname in $(ls -l /scripts | grep -oE "^-.*js$" | awk '{print $NF}' | grep -oE "^dust_.*\.js$"); do mv -f /scripts/$jsname /scripts/temp_$jsname; done; break; }
         test -z "$folders" && { echo 第 $i/5 次目录列表获取失败; sleep 5; i=$(( i + 1 )); }
     done
     for folder in $folders; do
