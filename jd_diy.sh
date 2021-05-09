@@ -4,30 +4,10 @@
 #### 由于更新可能引入未知BUG,建议复制脚本内容至GIST使用
 
 function monkcoder(){
-    # https://share.r2ray.com/dust/
-    apk add --no-cache --upgrade grep
-    i=1
-    while [ "$i" -le 5 ]; do
-        folders="$(curl -sX POST "https://share.r2ray.com/dust/" | grep -oP "name.*?\.folder" | cut -d, -f1 | cut -d\" -f3 | grep -vE "backup|pics|rewrite" | tr "\n" " ")"
-        test -n "$folders" && { for jsname in $(ls -l /scripts | grep -oE "^-.*js$" | awk '{print $NF}' | grep -oE "^dust_.*\.js$"); do mv -f /scripts/$jsname /scripts/temp_$jsname; done; break; }
-        test -z "$folders" && { echo 第 $i/5 次目录列表获取失败; sleep 5; i=$(( i + 1 )); }
-    done
-    for folder in $folders; do
-        i=1
-        while [ "$i" -le 5 ]; do
-            jsnames="$(curl -sX POST "https://share.r2ray.com/dust/${folder}/" | grep -oP "name.*?\.js\"" | grep -oE "[^\"]*\.js\"" | cut -d\" -f1 | tr "\n" " ")"
-            test -n "$jsnames" && break || { echo 第 $i/5 次 $folder 目录下文件列表获取失败; sleep 5; i=$(( i + 1 )); }
-        done
-        for jsname in $jsnames; do 
-            i=1
-            while [ "$i" -le 5 ]; do
-                [ "$i" -lt 5 ] && curl -so /scripts/dust_${jsname} "https://share.r2ray.com/dust/${folder}/${jsname}"
-                cat /scripts/dust_${jsname} | grep -qE "^function" && break || { echo 第 $i/5 次 $folder 目录下 $jsname 文件下载失败; sleep 5; i=$(( i + 1 )); }
-                [ "$i" -eq 5 ] && [ -f "/scripts/temp_dust_${jsname}" ] && mv -f /scripts/temp_dust_${jsname} /scripts/dust_${jsname}
-            done
-        done
-    done
-    rm -rf /scripts/temp_dust_*.js
+    # https://github.com/monk-coder/dust
+    rm -rf /monkcoder /scripts/monkcoder_*
+    git clone https://github.com/monk-coder/dust.git /monkcoder
+    for jsname in $(find /monkcoder -name "*.js" | grep -vE "\/backup\/"); do cp ${jsname} /scripts/monkcoder_${jsname##*/}; done
 }
 
 function whyour(){
@@ -37,6 +17,13 @@ function whyour(){
     for jsname in jdzz.js jx_nc.js jx_factory.js jx_factory_component.js ddxw.js dd_factory.js jd_zjd_tuan.js; do cp -rf /whyour/quanx/$jsname /scripts/whyour_$jsname; done
 }
 
+function nianyuguai(){
+    # https://github.com/nianyuguai/longzhuzhu.git
+    rm -rf /longzhuzhu /scripts/longzhuzhu_*
+    git clone -b main https://github.com/nianyuguai/longzhuzhu.git /longzhuzhu
+    for jsname in $(ls /longzhuzhu/qx | grep -oE ".*\js$"); do cp -rf /longzhuzhu/qx/$jsname /scripts/longzhuzhu_$jsname; done
+}
+
 function zcy01(){
     # https://raw.githubusercontent.com/ZCY01/daily_scripts/main/jd/jd_try.js
     wget -qO /scripts/zcy01_jd_try.js https://raw.githubusercontent.com/ZCY01/daily_scripts/main/jd/jd_try.js
@@ -44,8 +31,8 @@ function zcy01(){
 }
 
 function diycron(){
-    # monkcoder whyour 定时任务
-    for jsname in /scripts/dust_*.js /scripts/whyour_*.js; do
+    # monkcoder whyour nianyuguai 定时任务
+    for jsname in /scripts/monkcoder_*.js /scripts/whyour_*.js /scripts/longzhuzhu_*.js; do
         jsnamecron="$(cat $jsname | grep -oE "/?/?cron \".*\"" | cut -d\" -f2)"
         test -z "$jsnamecron" || echo "$jsnamecron node $jsname >> /scripts/logs/$(echo $jsname | cut -d/ -f3).log 2>&1" >> /scripts/docker/merged_list_file.sh
     done
@@ -64,6 +51,7 @@ function main(){
     a_jsname=$(ls -l /scripts | grep -oE "^-.*js$" | grep -oE "[^ ]*js$")
     monkcoder
     whyour
+    nianyuguai
     zcy01
     b_jsnum=$(ls -l /scripts | grep -oE "^-.*js$" | wc -l)
     b_jsname=$(ls -l /scripts | grep -oE "^-.*js$" | grep -oE "[^ ]*js$")

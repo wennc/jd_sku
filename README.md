@@ -34,10 +34,13 @@ cd /jd_sku/jd_scripts && docker-compose restart jd_scripts
 #### Tips:
 * [jdformat.sh](https://raw.githubusercontent.com/mixool/jd_sku/main/jdformat.sh) 可使用传入参数和网络参数来编辑docker-compose.yml文件
 * [jd_diy.sh](https://raw.githubusercontent.com/mixool/jd_sku/main/jd_diy.sh) 为diy脚本,**默认启用**,任务自动更新,其中涉及到的js脚本均由其它作者编写,未作任何改动
+* 如DIY脚本有侵犯到你的合法权益的代码,请联系删除
 * 其它帮助和声明 [lxk0301/jd_docker](https://gitee.com/lxk0301/jd_docker)
   
 #### Thanks:
 * [lxk0301/jd_docker](https://gitee.com/lxk0301/jd_docker)
 * [monk-coder](https://github.com/monk-coder) [布道场](https://t.me/monk_dust_channel) [dust](https://share.r2ray.com/dust/)
 * [whyour](https://github.com/whyour/hundun/tree/master/quanx)
+* [nianyuguai](https://github.com/nianyuguai/longzhuzhu.git)
+* [zcy01](https://github.com/ZCY01/daily_scripts/tree/main/jd)
 * 其它diy脚本中涉及到的作者
