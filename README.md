@@ -39,7 +39,7 @@ cd /jd_sku/jd_scripts && docker-compose restart jd_scripts
   
 #### Thanks:
 * [lxk0301/jd_docker](https://gitee.com/lxk0301/jd_docker)
-* [monk-coder](https://github.com/monk-coder) [布道场](https://t.me/monk_dust_channel) [dust](https://share.r2ray.com/dust/)
+* [monk-coder](https://github.com/monk-coder) [布道场](https://t.me/monk_dust_channel)
 * [whyour](https://github.com/whyour/hundun/tree/master/quanx)
 * [nianyuguai](https://github.com/nianyuguai/longzhuzhu.git)
 * [zcy01](https://github.com/ZCY01/daily_scripts/tree/main/jd)
