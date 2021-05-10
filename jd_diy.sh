@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ## 编辑docker-compose.yml文件添加 - CUSTOM_SHELL_FILE=https://raw.githubusercontent.com/mixool/jd_sku/main/jd_diy.sh
 ### CUSTOM_SHELL_FILE for https://gitee.com/lxk0301/jd_docker/tree/master/docker
-#### 由于更新可能引入未知BUG,建议复制脚本内容至GIST使用
+#### DIY脚本仅供参考,由于更新可能引入未知BUG,建议Fork后使用自己项目的raw地址
 
 function monkcoder(){
     # https://github.com/monk-coder/dust
@@ -37,10 +37,7 @@ function diycron(){
         test -z "$jsnamecron" || echo "$jsnamecron node $jsname >> /scripts/logs/$(echo $jsname | cut -d/ -f3).log 2>&1" >> /scripts/docker/merged_list_file.sh
     done
     # 启用京价保
-    echo "23 8 * * * node /scripts/jd_price.js >> /scripts/logs/jd_price.log 2>&1" >> /scripts/docker/merged_list_file.sh
-    # 修改docker_entrypoint.sh执行频率
-    #ln -sf /usr/local/bin/docker_entrypoint.sh /usr/local/bin/docker_entrypoint_mix.sh
-    #echo "35 */3 * * * docker_entrypoint_mix.sh >> /scripts/logs/default_task.log 2>&1" >> /scripts/docker/merged_list_file.sh
+    echo "39 0,23 * * * node /scripts/jd_price.js >> /scripts/logs/jd_price.log 2>&1" >> /scripts/docker/merged_list_file.sh
 }
 
 function main(){
